@@ -14,18 +14,11 @@ DOTFILESDIR=$(pwd -P)
 
 [ $(uname -s) = "Darwin" ] && export MACOS=1 && export UNIX=1
 [ $(uname -s) = "Linux" ] && export LINUX=1 && export UNIX=1
-uname -s | grep -q "_NT-" && export WINDOWS=1
 
 for DOTFILE in *; do
     HOMEFILE="$HOME/.$DOTFILE"
     [ -d $DOTFILE ] && DOTFILE="$DOTFILE/"
     DIRFILE="$DOTFILESDIR/$DOTFILE"
-    
-    # Don't mess with Codespaces' default GPG/SSH setup.
-    if [ -n "$CODESPACES" ]
-    then
-        echo $DOTFILE | egrep -q '^(gnupg|ssh)/' && continue
-    fi
     
     # Don't try to install documentation/script files
     echo $DOTFILE | egrep -q '(^script/$|\.txt$|\.md$)' && continue
@@ -34,30 +27,12 @@ for DOTFILE in *; do
     echo $DOTFILE | grep -q '\.sh' &&
     HOMEFILE="$HOME/.$(echo $DOTFILE | sed -e 's/\.sh//')"
     
-    # Fixup RuboCop configuration (if possible)
-    if echo $DOTFILE | grep -q 'rubocop-github.yml'
+    if [ -L "$HOMEFILE" ] && ! [ -d $DOTFILE ]
     then
-        HOMEGITHUB="$HOME/GitHub"
-        [ -d $HOMEGITHUB ] || continue
-        HOMEFILE="$HOMEGITHUB/.rubocop.yml"
-    elif echo $DOTFILE | grep -q 'rubocop-oss.yml'
-    then
-        HOMEOSS="$HOME/OSS"
-        [ -d $HOMEOSS ] || continue
-        HOMEFILE="$HOMEOSS/.rubocop.yml"
-    fi
-    
-    if [ $UNIX ]
-    then
-        if [ -L "$HOMEFILE" ] && ! [ -d $DOTFILE ]
-        then
-            ln -sfv "$DIRFILE" "$HOMEFILE"
-        else
-            rm -rv "$HOMEFILE" 2>/dev/null
-            ln -sv "$DIRFILE" "$HOMEFILE"
-        fi
+        ln -sfv "$DIRFILE" "$HOMEFILE"
     else
-        cp -rv "$DIRFILE" "$HOMEFILE"
+        rm -rv "$HOMEFILE" 2>/dev/null
+        ln -sv "$DIRFILE" "$HOMEFILE"
     fi
 done
 
