@@ -1,31 +1,21 @@
-# -- from zsh prompt config
-
-# modify the prompt to contain git branch name if applicable
-git_prompt_info() {
-    current_branch=$(git current-branch 2> /dev/null)
-    if [[ -n $current_branch ]]; then
-        echo " %{$fg_bold[green]%}$current_branch%{$reset_color%}"
-    fi
-}
-
-setopt promptsubst
-
-# Allow exported PS1 variable to override default prompt.
-if ! env | grep -q '^PS1='; then
-    PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[blue]%}%c%{$reset_color%}$(git_prompt_info) %# '
-fi
-
-# --- From old .zshrc.local
+# -- Prompt
+autoload -Uz vcs_info
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
+setopt prompt_subst
+PS1='%B%F{cyan}%1~%f%b '
+# PS1=\$vcs_info_msg_0_
+zstyle ':vcs_info:git:*' formats '%F{green}%r (%b)%f '
+zstyle ':vcs_info:*' enable git
 
 ## This may need to change in codespaces...
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
 
-# Hit jj to enter vi mode in the command prompt
-bindkey jj vi-cmd-mode
-export PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[blue]%}%c%{$reset_color%}$(git_prompt_info) %# '
-
 # Setup autojump
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
+
+# Hit jj to enter vi mode in the command prompt
+bindkey jj vi-cmd-mode
 
 # Init rbenv and nodeenv if not in codespaces
 if [ -n $CODESPACES]
@@ -33,10 +23,6 @@ then
     eval "$(nodenv init -)"
     eval "$(rbenv init -)"
 fi
-
-# ---- end old .zshrc.local
-
-
 
 # aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
