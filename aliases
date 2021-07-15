@@ -26,6 +26,9 @@ alias lgp="lucky gen.page"
 # Crystal
 alias crystal_master="/Users/paulcsmith/crystal-lang/crystal/bin/crystal"
 
+# Codespaces
+alias codespace-dotfiles="cd /workspaces/.codespaces/.persistedshare/dotfiles"
+
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
 
