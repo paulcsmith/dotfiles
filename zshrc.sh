@@ -1,12 +1,23 @@
+# makes color constants available
+autoload -U colors
+colors
+
+# enable colored output from ls, etc. on FreeBSD-based systems
+export CLICOLOR=1
+
 # -- Prompt
-autoload -Uz vcs_info
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
-setopt prompt_subst
-PS1='%B%F{cyan}%1~%f%b '
-# PS1=\$vcs_info_msg_0_
-zstyle ':vcs_info:git:*' formats '%F{green}%r (%b)%f '
-zstyle ':vcs_info:*' enable git
+
+# Modify the prompt to contain git branch name if applicable
+git_prompt_info() {
+    current_branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
+    if [[ -n $current_branch ]]; then
+        echo "%{$fg_bold[blue]%}($current_branch)%{$reset_color%}"
+    fi
+}
+
+setopt promptsubst
+
+PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[cyan]%}%c%{$reset_color%}$(git_prompt_info) %{$fg_bold[cyan]%}›%{$reset_color%} '
 
 ## This may need to change in codespaces...
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
