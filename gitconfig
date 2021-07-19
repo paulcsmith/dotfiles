@@ -36,5 +36,3 @@
 	email = paulcsmith0218@gmail.com
 [github]
 	user = paulcsmith
-[credential]
-	helper = osxkeychain
