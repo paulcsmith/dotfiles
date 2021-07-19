@@ -28,10 +28,13 @@ PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[cyan]%}%c%{$reset_c
 # Hit jj to enter vi mode in the command prompt
 bindkey jj vi-cmd-mode
 
-# Init rbenv and nodeenv if not in codespaces
-if [ -n $CODESPACES ]
+if command -v nodenv &> /dev/null
 then
     eval "$(nodenv init -)"
+fi
+
+if command -v rbenv &> /dev/null
+then
     eval "$(rbenv init -)"
 fi
 
